@@ -4,7 +4,7 @@ A simple .net core webapi using Kafka as a streaming API.
 ## StreamingApi (dotnet core webapi)
 The webapi is the entry point to generate an order (i.e. to order a book). The Api sends the request (after serializing the object to a json string) to a topic in Kafka called 'orderBookRequests'.
 
-- Endpoint: http://localhost:3480/api/order
+- Endpoint: http://localhost:5000/api/order
 
 - Action: POST
 
