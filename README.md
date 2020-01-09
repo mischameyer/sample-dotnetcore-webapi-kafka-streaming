@@ -1,16 +1,16 @@
 # sample-dotnetcore-webapi-kafka-streaming
 A simple .net core webapi using Kafka as a streaming API.
 
-## Streaming Api (dotnet core webapi)
+## StreamingApi (dotnet core webapi)
 The webapi is the entry point to generate an order (i.e. to order a book). The Api sends the request (after serializing the object to a json string) to a topic in Kafka called 'orderBookRequests'.
 
 - Endpoint: http://localhost:3480/api/order
 
 - Action: POST
 
-- JSON Body: ``` {"Id":1234, "Book":{"Title":"Origin", "Isbn": "9123456123456"}, "Quantity":3} ```
+- Body: ``` {"Id":1234, "Book":{"Title":"Origin", "Isbn": "9123456123456"}, "Quantity":3} ```
 
-## Streaming Distributor (dotnet core console app)
+## StreamingDistributor (dotnet core console app)
 The console app is used as a running service for mapping (from OrderRequest to DeliverRequest) and distributing. As soon as the app is started it acts as a Kafka consumer with a subscription to the topic 'orderBookRequests'. When receiving the messages, they are desirialized from a json string and mapped into a new object called 'DeliveryOrder'. This object will be sent to a producer which writes messages to the Kafka topic 'deliverBookRequests'.
 
 ## Producer (dotnet core class library)
@@ -50,8 +50,47 @@ Go to a webbrowser and start Confluent Control Center: localhost:9021
 Under 'topics' you can create two new topics called 'orderBookRequests' and 'deliverBookRequests' with 1 partitions each.
 
 
-### Step 3: Start the .NET Console Producer (in separate Terminal):
+### Step 3: Start the .NET Console StreamingDistributor (in separate Terminal):
 
-```cd bookstore-producer```
+```cd StreamingDistributor```
 
-dotnet run args[-newmsg, -topic, -partition]  (i.e. ```dotnet run -newmsg 24 -topic testTopicP12 -partition 12```)
+dotnet run args[-topic]  (i.e. ```dotnet run -topic orderBookRequests```)
+
+The result should be like that:
+
+- Press Ctrl+C to exit
+- Topic: orderBookRequests
+- Group: test-group
+
+### Step 4: Start the .NET WebApi StreamingApi (in separate Terminal):
+
+```cd StreamingApi```
+
+```dotnet run```
+
+The result should be like that:
+
+- info: Microsoft.Hosting.Lifetime[0]
+-      Now listening on: https://localhost:5001
+- info: Microsoft.Hosting.Lifetime[0]
+-      Now listening on: http://localhost:5000
+- info: Microsoft.Hosting.Lifetime[0]
+-      Application started. Press Ctrl+C to shut down.
+- info: Microsoft.Hosting.Lifetime[0]
+-      Hosting environment: Development
+- info: Microsoft.Hosting.Lifetime[0]
+
+### Step 5: Generate a new order with a common REST-Api Tool (i.e. Insomnia)
+
+https: ```https://localhost:5001```
+http: ```http://localhost:5000```
+
+Action: POST
+
+Header: application/json
+
+Body: ``` {"Id":1234, "Book":{"Title":"Origin", "Isbn": "9123456123456"}, "Quantity":3} ```
+
+The result in the console (where the WebApi is running) should be like that:
+
+Delivered '{"Id":1234,"Book":{"Isbn":"9123456123456","Title":"Origin"},"Quantity":3,"status":0}' to: orderBookRequests [[0]] @47
