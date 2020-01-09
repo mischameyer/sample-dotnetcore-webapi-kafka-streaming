@@ -45,7 +45,7 @@ Make sure you have at least 8192MB Memory allocated in docker (Settings, Advance
 All states should have the value 'Up'
 
 ### Step 2.4: Use Confluent Control Center
-Go to a webbrowser and start Confluent Control Center: localhost:9021
+Go to a webbrowser and start Confluent Control Center: ```localhost:9021```
 
 Under 'topics' you can create two new topics called 'orderBookRequests' and 'deliverBookRequests' with 1 partitions each.
 
@@ -83,6 +83,7 @@ The result should be like that:
 ### Step 5: Generate a new order with a common REST-Api Tool (i.e. Insomnia)
 
 https: ```https://localhost:5001```
+
 http: ```http://localhost:5000```
 
 Action: POST
