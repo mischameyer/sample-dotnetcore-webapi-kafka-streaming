@@ -16,5 +16,42 @@ The console app is used as a running service for mapping (from OrderRequest to D
 ## Producer (dotnet core class library)
 This class library hat two producers. One producer writes to the Kafka topic 'orderBookRequests', the other producer writes to the Kafka topic 'deliverBookRequests'.
 
+## Option 1 (manually): Start Zookeeper and Kafka-Server manually
+
+### Precon:
+Install Kafka (latest version) on your local machine: [https://kafka.apache.org/downloads]
+
+### Step 1.1: Start the Zookeeper Server (in separate Terminal):
+```bin\windows\zookeeper-server-start.bat config/zookeeper.properties```
+
+### Step 1.2: Start the Kafka Server (in separate Terminal):
+```bin\windows\kafka-server-start.bat config/server.properties```
+
+## Option 2 (with Docker): Start Zookeeper, Kafka-Server, Broker and Confluent with Docker
+
+### Step 2.1: Clone Confluent-Examples from Github
+```git clone https://github.com/confluentinc/examples/tree/5.3.1-post/cp-all-in-one```
+
+### Step 2.2: Docker-Compose
+Make sure you have at least 8192MB Memory allocated in docker (Settings, Advanced).
+
+```cd cp-all-in-one```
+
+```docker-compose up -d --build```
+
+### Step 2.3: Check State of Docker-Containers
+```docker-compose ps```
+
+All states should have the value 'Up'
+
+### Step 2.4: Use Confluent Control Center
+Go to a webbrowser and start Confluent Control Center: localhost:9021
+
+Under 'topics' you can create two new topics called 'orderBookRequests' and 'deliverBookRequests' with 1 partitions each.
 
 
+### Step 3: Start the .NET Console Producer (in separate Terminal):
+
+```cd bookstore-producer```
+
+dotnet run args[-newmsg, -topic, -partition]  (i.e. ```dotnet run -newmsg 24 -topic testTopicP12 -partition 12```)
